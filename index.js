@@ -10,6 +10,8 @@ const EULER_API_KEY = "euler_MDEyOGViMjc2NmFjMjY2MjM5ZTVjYWNkNjRhZjc2ZDYzNzk0MTh
 // Proxy route
 app.post("/sign", async (req, res) => {
   try {
+    console.log("Incoming request body:", req.body);
+
     const response = await fetch("https://api.eulerstream.com/v2/tiktok/signature", {
       method: "POST",
       headers: {
@@ -19,12 +21,15 @@ app.post("/sign", async (req, res) => {
       body: JSON.stringify(req.body)
     });
 
-    const data = await response.json();
-    return res.json(data);
+    const text = await response.text();
+    console.log("Euler response:", text);
+
+    res.setHeader("Content-Type", "application/json");
+    return res.send(text);
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "proxy_error" });
+    console.error("PROXY ERROR:", err);
+    return res.status(500).json({ error: "proxy_error", details: err.toString() });
   }
 });
 
